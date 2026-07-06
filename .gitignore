@@ -14,9 +14,7 @@ build/
 *.jpg
 *.jpeg
 
-# Outputs / Documentos
-resultados1.docx
-resultadosAT.docx
+# Temporarios do Word
 ~$*.docx
 
 # Ambiente
