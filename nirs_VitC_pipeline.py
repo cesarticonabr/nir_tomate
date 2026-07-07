@@ -28,6 +28,18 @@ amostras = [c for c in espectros.columns if c != 'Espectro']
 wv = espectros['Espectro'].values; X_raw = espectros[amostras].T.values
 def snv(X): return (X-X.mean(axis=1,keepdims=True))/X.std(axis=1,keepdims=True)
 X_snv = snv(X_raw)
+
+# --- REMOCAO DE FAIXAS RUIDOSAS (Recomendacao 9.2) ---
+from nirs_utils import criar_mascara_comprimentos
+print('\n--- Remocao de faixas espectrais ruidosas ---')
+mask, n_rem = criar_mascara_comprimentos(wv)
+print(f'  Removendo {n_rem}/{len(wv)} pontos ({n_rem/len(wv)*100:.1f}%)')
+X_snv = X_snv[:, mask]
+X_raw = X_raw[:, mask]
+wv = wv[mask]
+print(f'  Comprimentos mantidos: {len(wv)}')
+# ---
+
 df_meta = pd.DataFrame([re.match(r'(T\d+)(R\d+)F(\d+)',a.strip()).groups() for a in amostras],
                         columns=['T','R','F'], index=amostras)
 df_meta['Parcela'] = df_meta['T']+df_meta['R']

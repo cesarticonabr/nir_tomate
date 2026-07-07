@@ -75,6 +75,18 @@ def derivada_sg(X, window=11, polyorder=2, deriv=1):
     return savgol_filter(X, window_length=window, polyorder=polyorder, deriv=deriv, axis=1)
 
 X_snv = snv_transform(X_raw)
+
+# --- REMOCAO DE FAIXAS RUIDOSAS (Recomendacao 9.2) ---
+from nirs_utils import criar_mascara_comprimentos
+print('\n--- Remocao de faixas espectrais ruidosas ---')
+mask, n_rem = criar_mascara_comprimentos(wavelengths)
+print(f'  Removendo {n_rem}/{len(wavelengths)} pontos ({n_rem/len(wavelengths)*100:.1f}%)')
+X_snv = X_snv[:, mask]
+X_raw = X_raw[:, mask]
+wavelengths = wavelengths[mask]
+print(f'  Comprimentos mantidos: {len(wavelengths)}')
+# ---
+
 X_pre = derivada_sg(X_snv, window=11, polyorder=2, deriv=1)
 
 print(f"  SNV: aplicado (cada espectro centrado e escalado)")

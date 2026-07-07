@@ -42,6 +42,18 @@ def snv(X):
     return (X - X.mean(axis=1, keepdims=True)) / X.std(axis=1, keepdims=True)
 
 X_snv = snv(X_raw)
+
+# --- REMOCAO DE FAIXAS RUIDOSAS (Recomendacao 9.2) ---
+from nirs_utils import criar_mascara_comprimentos
+print('\n--- Remocao de faixas espectrais ruidosas ---')
+mask, n_rem = criar_mascara_comprimentos(wv)
+print(f'  Removendo {n_rem}/{len(wv)} pontos ({n_rem/len(wv)*100:.1f}%)')
+X_snv = X_snv[:, mask]
+X_raw = X_raw[:, mask]
+wv = wv[mask]
+print(f'  Comprimentos mantidos: {len(wv)}')
+# ---
+
 X_sg = savgol_filter(X_snv, window_length=11, polyorder=2, deriv=1, axis=1)
 
 print(f"\nAmostras: {len(y)} | Features: {len(wv)} | Parcelas: {df_meta['Parcela'].nunique()}")
